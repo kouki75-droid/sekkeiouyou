@@ -13,6 +13,7 @@ protected:
     bool active;
 
 public:
+	// コンストラクタで初期値を明確に指定する
     Character(const std::string& n, int h, int a)
         : name(n), hp(h), maxHp(h), attack(a), active(true) {
     }

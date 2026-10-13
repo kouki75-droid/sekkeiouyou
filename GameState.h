@@ -29,6 +29,7 @@ private:
     Enemy* currentEnemy;
 
 public:
+	// コンストラクタでプレイヤーとエネミープールを初期化
     GameStateManager();
     void ChangeState(std::unique_ptr<GameState> newState);
     void Run();

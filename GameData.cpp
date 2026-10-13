@@ -7,6 +7,7 @@ GameData::GameData() {
     enemyTable[3] = { "ドラゴン", 120, 22, 100 };
 }
 
+// EnemyDataを取得するメソッド
 const EnemyData& GameData::GetEnemyData(int typeId) const {
     return enemyTable.at(typeId);
 }

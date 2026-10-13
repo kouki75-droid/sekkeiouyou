@@ -25,6 +25,7 @@ void GameStateManager::ChangeState(std::unique_ptr<GameState> newState) {
     }
 }
 
+// メインループ
 void GameStateManager::Run() {
     ChangeState(std::make_unique<StateExplore>());
     while (currentState) {
@@ -38,6 +39,7 @@ void StateExplore::Enter(GameStateManager& manager) {
     std::cout << "ダンジョンを探索中...\n";
 }
 
+// プレイヤーの選択肢を表示し、入力を受け付ける
 void StateExplore::Update(GameStateManager& manager) {
     std::cout << "1: 進む   2: 休む (HP回復)   3: ゲーム終了\n> ";
     int choice;
@@ -65,6 +67,7 @@ void StateBattle::Enter(GameStateManager& manager) {
     std::cout << "\n--- 戦闘開始！ " << manager.GetCurrentEnemy()->GetName() << " が現れた！ ---\n";
 }
 
+// 戦闘の進行
 void StateBattle::Update(GameStateManager& manager) {
     Player& player = manager.GetPlayer();
     Enemy* enemy = manager.GetCurrentEnemy();

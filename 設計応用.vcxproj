@@ -124,14 +124,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EnemyPool.cpp" />
+    <ClCompile Include="GameController.cpp" />
+    <ClCompile Include="GameController.h" />
     <ClCompile Include="GameData.cpp" />
-    <ClCompile Include="GameState.cpp" />
-    <ClCompile Include="設計応用.cpp" />
+    <ClCompile Include="GameModel.cpp" />
+    <ClCompile Include="GameView.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h" />
+    <ClInclude Include="EnemyPool.h" />
     <ClInclude Include="GameData.h" />
-    <ClInclude Include="GameState.h" />
+    <ClInclude Include="GameModel.h" />
+    <ClInclude Include="GameView.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

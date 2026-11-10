@@ -1,6 +1,11 @@
+
 #pragma once
 #include <string>
 #include <unordered_map>
+
+// ============================================================
+// [Model] マスターデータ
+// ============================================================
 
 // 敵キャラクターのマスターデータ構造 (DataTable)
 struct EnemyData {
@@ -27,4 +32,7 @@ public:
     GameData& operator=(const GameData&) = delete;
 
     const EnemyData& GetEnemyData(int typeId) const;
+
+    // 登録されている敵の種類数（ID は 1 から連番）
+    int GetEnemyTypeCount() const { return static_cast<int>(enemyTable.size()); }
 };

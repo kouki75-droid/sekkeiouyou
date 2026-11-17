@@ -21,11 +21,13 @@ public:
     void ShowNoEnemyAvailable() const;
 
     // 戦闘
-    void ShowBattleStart(const Enemy& enemy) const;
-    void ShowBattleStatus(const Player& player, const Enemy& enemy) const;
+    void ShowBattleStart(std::size_t enemyCount) const;
+    void ShowBattleStatus(const Player& player, const std::vector<Enemy*>& enemies) const;
     void ShowBattleMenu() const;
+    void ShowTargetPrompt(int enemyCount) const;
+    void ShowSpellMenu(const GameData::SpellList& spells, int attackPower) const;
     void ShowBattleTurn(const BattleTurnResult& result) const;
-    void ShowFlee() const;
+    void ShowFlee(const FleeResult& result) const;
 
     // ゲームオーバー
     void ShowGameOver() const;
@@ -36,5 +38,6 @@ public:
 
 private:
     void ShowAttack(const AttackResult& result) const;
+    void ShowDamage(const AttackResult& result) const;
     void ShowExp(const ExpResult& result, const std::string& playerName) const;
 };

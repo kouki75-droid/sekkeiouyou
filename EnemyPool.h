@@ -14,7 +14,7 @@ public:
     explicit EnemyPool(std::size_t size) : pool(size) {}
 
     // プールから未使用の敵を取得・初期化（空きがなければ nullptr）
-    Enemy* SpawnEnemy(int enemyTypeId);
+    Enemy* SpawnEnemy(const EnemyData& data);
 
     // 敵をプールに返却（非アクティブ化して再利用可能にする）
     void DespawnEnemy(Enemy* enemy) {

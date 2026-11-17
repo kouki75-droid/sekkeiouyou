@@ -1,8 +1,6 @@
 #include "EnemyPool.h"
-#include "GameData.h"
 
-Enemy* EnemyPool::SpawnEnemy(int enemyTypeId) {
-    const EnemyData& data = GameData::GetInstance().GetEnemyData(enemyTypeId);
+Enemy* EnemyPool::SpawnEnemy(const EnemyData& data) {
     for (auto& enemy : pool) {
         if (!enemy.IsActive()) {
             enemy.ResetEnemy(data.name, data.maxHp, data.attack, data.expReward);

@@ -1,5 +1,6 @@
 
 #pragma once
+#include "GameData.h"
 #include <string>
 #include <vector>
 
@@ -51,13 +52,20 @@ public:
     virtual ~Character() = default;
 
     virtual AttackResult Attack(Character& target) {
+        return DealDamage(target, attack);
+    }
+
+protected:
+    AttackResult DealDamage(Character& target, int damage) {
         AttackResult result;
         result.attackerName = name;
         result.targetName = target.GetName();
-        result.damage = attack;
-        result.targetDefeated = target.TakeDamage(attack);
+        result.damage = damage;
+        result.targetDefeated = target.TakeDamage(damage);
         return result;
     }
+
+public:
 
     // ダメージを受ける。この攻撃で倒れた場合 true を返す
     bool TakeDamage(int dmg) {
@@ -103,8 +111,24 @@ private:
     int level;
     int currentExp;
     int nextLevelExp;
+    static constexpr int MAX_MP = 15;
+    int mp = MAX_MP;
 
 public:
+    bool TrySpendMp(int cost) {
+        if (mp < cost) return false;
+        mp -= cost;
+        return true;
+    }
+
+    AttackResult MagicAttack(Character& target, const SpellData& spell) {
+        return DealDamage(target, attack + spell.bonusDamage);
+    }
+
+    void RestoreMp() { mp = MAX_MP; }
+    int GetMp() const { return mp; }
+    int GetMaxMp() const { return MAX_MP; }
+
     Player(const std::string& n, JobType job)
         : Character(n, 100, 15), level(1), currentExp(0), nextLevelExp(30) {
 

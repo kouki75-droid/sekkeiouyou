@@ -66,7 +66,7 @@ void StateExplore::Update(GameController& controller) {
 
 // ---------- StateBattle ----------
 void StateBattle::Enter(GameController& controller) {
-    controller.GetView().ShowBattleStart(*controller.GetModel().GetCurrentEnemy());
+    controller.GetView().ShowBattleStart(controller.GetModel().GetEnemies().size());
 }
 
 // êÌì¨ÇÃêiçs
@@ -74,16 +74,55 @@ void StateBattle::Update(GameController& controller) {
     GameModel& model = controller.GetModel();
     const GameView& view = controller.GetView();
 
-    view.ShowBattleStatus(model.GetPlayer(), *model.GetCurrentEnemy());
+    view.ShowBattleStatus(model.GetPlayer(), model.GetEnemies());
     view.ShowBattleMenu();
     int choice = view.ReadChoice();
 
+    const SpellData* spell = nullptr;
+    if (choice == 2) {
+        const auto spells = GameData::GetInstance().GetSpells(model.GetPlayer().GetLevel());
+        const int spellCount = static_cast<int>(spells.size());
+        while (true) {
+            view.ShowSpellMenu(spells, model.GetPlayer().GetAttackPower());
+            const int spellChoice = view.ReadChoice();
+            if (spellChoice == INPUT_CLOSED) {
+                controller.ChangeState(nullptr);
+                return;
+            }
+            if (spellChoice == spellCount + 1) {
+                return;
+            }
+            if (spellChoice >= 1 && spellChoice <= spellCount) {
+                spell = spells[spellChoice - 1];
+                break;
+            }
+            view.ShowInvalidInput();
+        }
+    }
+
     switch (choice) {
-    case 1: {
-        BattleTurnResult result = model.PlayerAttack();
+    case 1:
+    case 2: {
+        const int enemyCount = static_cast<int>(model.GetEnemies().size());
+        int targetChoice = 1;
+        if (enemyCount > 1 && (!spell || spell->target != SpellTarget::All)) {
+            view.ShowTargetPrompt(enemyCount);
+            targetChoice = view.ReadChoice();
+            if (targetChoice == INPUT_CLOSED) {
+                controller.ChangeState(nullptr);
+                return;
+            }
+            if (targetChoice == enemyCount + 1) return;
+            if (targetChoice < 1 || targetChoice > enemyCount) {
+                view.ShowInvalidInput();
+                return;
+            }
+        }
+
+        BattleTurnResult result = model.PlayerAttack(targetChoice - 1, spell);
         view.ShowBattleTurn(result);
 
-        if (result.enemyDefeated) {
+        if (result.battleWon) {
             controller.ChangeState(std::make_unique<StateExplore>());
         }
         else if (result.playerDefeated) {
@@ -91,11 +130,17 @@ void StateBattle::Update(GameController& controller) {
         }
         break;
     }
-    case 2:
-        model.Flee();
-        view.ShowFlee();
-        controller.ChangeState(std::make_unique<StateExplore>());
+    case 3: {
+        FleeResult result = model.Flee();
+        view.ShowFlee(result);
+        if (result.escaped) {
+            controller.ChangeState(std::make_unique<StateExplore>());
+        }
+        else if (result.enemyAttack.targetDefeated) {
+            controller.ChangeState(std::make_unique<StateGameOver>());
+        }
         break;
+    }
     case INPUT_CLOSED:
         controller.ChangeState(nullptr); // ì¸óÕèIóπ
         break;

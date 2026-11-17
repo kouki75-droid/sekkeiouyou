@@ -2,6 +2,7 @@
 #include "Character.h"
 #include "EnemyPool.h"
 #include <random>
+#include <vector>
 
 // ============================================================
 // [Model] ゲーム全体の状態とルール
@@ -11,39 +12,48 @@
 
 // 戦闘1ターン分の結果
 struct BattleTurnResult {
-    AttackResult playerAttack;
+    std::vector<AttackResult> playerAttacks;
+    std::string spellName;
+    bool insufficientMp = false;
     bool enemyAttacked = false;   // 敵が反撃したか
     AttackResult enemyAttack;     // enemyAttacked が true のときのみ有効
-    bool enemyDefeated = false;
+    bool battleWon = false;
     bool playerDefeated = false;
-    ExpResult exp;                // enemyDefeated が true のときのみ有効
+    ExpResult exp;
+};
+
+struct FleeResult {
+    bool escaped = false;
+    AttackResult enemyAttack;
 };
 
 class GameModel {
 private:
     Player player;
     EnemyPool enemyPool;
-    Enemy* currentEnemy;
+    static constexpr int MAX_ENEMIES = 3;
+    std::vector<Enemy*> enemies;
     std::mt19937 rng;
 
+    AttackResult EnemyCounterattack(Enemy& enemy);
     void EndBattle();
 
 public:
     GameModel();
 
-    // 探索して敵と遭遇する。プールに空きがなければ nullptr
-    const Enemy* StartEncounter();
+    // 探索して敵と遭遇する。戦闘を開始できれば true
+    bool StartEncounter();
 
-    // 休憩して HP を全回復
+    // 休憩して HP と MP を全回復
     void Rest();
 
     // プレイヤーが攻撃し、敵が生きていれば反撃する
-    BattleTurnResult PlayerAttack();
+    BattleTurnResult PlayerAttack(std::size_t targetIndex, const SpellData* spell = nullptr);
 
     // 戦闘から逃げる
-    void Flee();
+    FleeResult Flee();
 
     const Player& GetPlayer() const { return player; }
-    const Enemy* GetCurrentEnemy() const { return currentEnemy; }
-    bool IsInBattle() const { return currentEnemy != nullptr; }
+    const std::vector<Enemy*>& GetEnemies() const { return enemies; }
+    bool IsInBattle() const { return !enemies.empty(); }
 };
